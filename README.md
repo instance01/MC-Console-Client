@@ -10,7 +10,7 @@ TODO
 - [ ] JSON parsing
 - [ ] IPv6 and domains support
 - [ ] premium support
-- [ ] Start parameters for executing from windows console
+- [x] Start parameters for executing from windows console
 - [ ] probably support for minecraft snapshots
 
 
