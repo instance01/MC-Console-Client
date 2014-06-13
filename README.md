@@ -11,6 +11,7 @@ TODO
 - [ ] IPv6 and domains support
 - [ ] premium support
 - [ ] Start parameters for executing from windows console
+- [ ] probably support for minecraft snapshots
 
 
 
