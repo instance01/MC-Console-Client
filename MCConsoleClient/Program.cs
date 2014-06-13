@@ -87,7 +87,15 @@ namespace MCConsoleClient
 
         static void connect(String server, int port)
         {
-            IPAddress ip = IPAddress.Parse(server); // TODO add domains and IPv6 support
+            IPAddress ip;
+            if (!IPAddress.TryParse(server, out ip))
+            {
+                ip = Dns.GetHostEntry(server).AddressList[0];
+            }
+            else
+            {
+                ip = IPAddress.Parse(server);
+            }
             IPEndPoint ipEndpoint = new IPEndPoint(ip, port);
             sock = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             sock.Connect(ipEndpoint);
