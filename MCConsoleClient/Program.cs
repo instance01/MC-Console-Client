@@ -16,30 +16,67 @@ namespace MCConsoleClient
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Usage example: 5.104.104.45 25565 InstanceLabs password");
+            Console.WriteLine("Leave password empty for offline mode.");
+            bool cmd = false;
+            String address = "127.0.0.1";
+            String portstr = "25565";
+            int port = 25565;
+            String username = "";
+            String password = "";
+            if (args.Length > 3)
+            {
+                address = args[0];
+                portstr = args[1];
+                port = Convert.ToInt32(portstr);
+                username = args[2];
+                password = args[3];
+                cmd = true;
+            }else if(args.Length > 2 && args.Length < 4){
+                address = args[0];
+                portstr = args[1];
+                port = Convert.ToInt32(portstr);
+                username = args[2];
+                password = "";
+                cmd = true;
+            }
             bool menu = true;
             while (menu)
             {
+                if (cmd)
+                {
+                    login(address, port, username, password);
+                    while (sock.Connected)
+                    {
+                        // send message
+                        Packets.chatMessage0x01(Console.ReadLine());
+                    }
+                    return;
+                }
                 Console.Write("Server > ");
-                String address = Console.ReadLine();
+                address = Console.ReadLine();
                 if (address == "")
                 {
                     address = "127.0.0.1";
                 }
                 Console.Write("Port > ");
-                String portstr = Console.ReadLine();
+                portstr = Console.ReadLine();
                 if (portstr == "")
                 {
                     portstr = "25565";
                 }
-                connect(address, Convert.ToInt32(portstr));
-                getServerInfo(address, Convert.ToInt32(portstr));
+                port = Convert.ToInt32(portstr);
+                connect(address, port);
+                getServerInfo(address, port);
                 Console.Write("Connect? (y/n) ");
                 if (Console.ReadLine().ToLower().StartsWith("y"))
                 {
                     // connect
                     Console.Write("Username > ");
-                    String username = Console.ReadLine();
-                    login(address, Convert.ToInt32(portstr), username);
+                    username = Console.ReadLine();
+                    Console.Write("Passord (leave empty for offline mode) > ");
+                    password = Console.ReadLine();
+                    login(address, port, username, password);
                     while(sock.Connected){
                         // send message
                         Packets.chatMessage0x01(Console.ReadLine());
@@ -64,7 +101,7 @@ namespace MCConsoleClient
             sock.Close();
         }
 
-        static void login(string address, int port, string username)
+        static void login(string address, int port, string username, String password)
         {
             connect(address, port);
             Packets.handshake0x00(address, port, 2);
