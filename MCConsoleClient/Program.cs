@@ -13,6 +13,8 @@ namespace MCConsoleClient
     {
         public static Socket sock;
         public static Thread thread;
+        public static string accessToken = "";
+        public static string uuid = "";
 
         static void Main(string[] args)
         {
@@ -74,8 +76,11 @@ namespace MCConsoleClient
                     // connect
                     Console.Write("Username > ");
                     username = Console.ReadLine();
+                    Console.Write("EMail (leave empty if you still have an unmigrated account) > ");
+                    string email = Console.ReadLine();
                     Console.Write("Passord (leave empty for offline mode) > ");
                     password = Console.ReadLine();
+                    Console.WriteLine(Util.loginSession(username, email, password));
                     login(address, port, username, password);
                     while(sock.Connected){
                         // send message
@@ -119,6 +124,11 @@ namespace MCConsoleClient
                 thread = new Thread(new ThreadStart(handleUpdates));
                 thread.Start();
             }
+        }
+
+        static void loginSession()
+        {
+
         }
 
         static void handleUpdates()

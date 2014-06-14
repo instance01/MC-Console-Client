@@ -78,7 +78,7 @@ namespace MCConsoleClient
             else if (def == 1) // 0x01 Encryption Request 
             {
                 // premium, asks for mojang key!
-                // TODO
+                encryptionRequest();
                 return true;
             }
             else if (def == 2) // 0x02 Login Success 
@@ -121,6 +121,39 @@ namespace MCConsoleClient
             data.AddRange(Util.toVarInt(rawdata.ToArray().Length));
             data.AddRange(rawdata);
             Program.sock.Send(data.ToArray());
+        }
+
+        //
+        public static void encryptionRequest()
+        {
+            // serverid
+            String serverid = Util.readString();
+
+            // publickey
+            byte[] publickey_length_raw = new byte[2];
+            Program.sock.Receive(publickey_length_raw, 2, SocketFlags.None);
+            Array.Reverse(publickey_length_raw);
+            short publickey_length = BitConverter.ToInt16(publickey_length_raw, 0);
+            byte[] publickey = new byte[publickey_length];
+            Program.sock.Receive(publickey, publickey_length, SocketFlags.None);
+
+            // token
+            byte[] token_length_raw = new byte[2];
+            Program.sock.Receive(token_length_raw, 2, SocketFlags.None);
+            Array.Reverse(token_length_raw);
+            short token_length = BitConverter.ToInt16(token_length_raw, 0);
+            byte[] token = new byte[token_length];
+            Program.sock.Receive(token, token_length, SocketFlags.None);
+
+            Console.WriteLine(serverid);
+            Console.WriteLine(BitConverter.ToString(publickey));
+            Console.WriteLine(BitConverter.ToString(token));
+        }
+
+        //
+        public static void encryptionResponse(byte[] publickey, byte[] token, string serverid)
+        {
+            //TODO
         }
     }
 }

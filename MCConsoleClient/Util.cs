@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Net;
 
 namespace MCConsoleClient
 {
@@ -68,6 +69,74 @@ namespace MCConsoleClient
         public static void parseJSONMessage()
         {
             //TODO
+        }
+
+
+        public static string loginSession(string username, string email, string password)
+        {
+            try
+            {
+                WebClient w = new WebClient();
+                w.Headers.Add("Content-Type: application/json");
+
+                string json = "{\"agent\": { \"name\": \"Minecraft\", \"version\": 1 }, \"username\": \"" + username + "\", \"password\": \"" + password + "\" }";
+
+                string r = w.UploadString("https://authserver.mojang.com/authenticate", json);
+                int i = r.IndexOf("\"id\":\"") + 6;
+                int i_ = r.IndexOf("\"accessToken\":\"") + 15;
+                string uuid = r.Substring(i, r.IndexOf("\"", i + 1) - i);
+                string accessToken = r.Substring(i_, r.IndexOf("\"", i_ + 1) - i_);
+                Program.uuid = uuid;
+                Program.accessToken = accessToken;
+                return uuid;
+            }
+            catch (WebException)
+            {
+                try
+                {
+                    WebClient w_ = new WebClient();
+                    w_.Headers.Add("Content-Type: application/json");
+
+                    string json = "{\"agent\": { \"name\": \"Minecraft\", \"version\": 1 }, \"username\": \"" + email + "\", \"password\": \"" + password + "\" }";
+
+                    string r = w_.UploadString("https://authserver.mojang.com/authenticate", json);
+                    int i = r.IndexOf("\"id\":\"") + 6;
+                    int i_ = r.IndexOf("\"accessToken\":\"") + 15;
+                    string uuid = r.Substring(i, r.IndexOf("\"", i + 1) - i);
+                    string accessToken = r.Substring(i_, r.IndexOf("\"", i_ + 1) - i_);
+                    Program.uuid = uuid;
+                    Program.accessToken = accessToken;
+                    return uuid;
+                }
+                catch (WebException)
+                {
+                    // k den
+                    return "";
+                }
+            }
+        }
+
+        public static string joinServerSession(string serverHash)
+        {
+            if (Program.accessToken == "")
+            {
+                Console.WriteLine("Failed to login.");
+                return "";
+            }
+            try
+            {
+                WebClient wClient = new WebClient();
+                wClient.Headers.Add("Content-Type: application/json");
+
+                var json = "{\"accessToken\":\"" + Program.accessToken + "\",\"selectedProfile\":\"" + Program.uuid + "\",\"serverId\":\"" + serverHash + "\"}";
+
+                return wClient.UploadString("https://sessionserver.mojang.com/session/minecraft/join", json);
+            }
+            catch (WebException e)
+            {
+                Console.WriteLine(e);
+                return "";
+            }
         }
     }
 }
