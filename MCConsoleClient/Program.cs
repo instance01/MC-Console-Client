@@ -90,7 +90,7 @@ namespace MCConsoleClient
             }
         }
 
-        static void connect(String server, int port)
+        public static void connect(String server, int port)
         {
             IPAddress ip;
             if (!IPAddress.TryParse(server, out ip))
@@ -106,7 +106,7 @@ namespace MCConsoleClient
             sock.Connect(ipEndpoint);
         }
 
-        static void getServerInfo(string address, int port)
+        public static void getServerInfo(string address, int port)
         {
             Packets.handshake0x00(address, port, 1);
             Packets.request0x00();
@@ -114,7 +114,7 @@ namespace MCConsoleClient
             sock.Close();
         }
 
-        static void login(string address, int port, string username, String password)
+        public static void login(string address, int port, string username, String password)
         {
             connect(address, port);
             Packets.handshake0x00(address, port, 2);
@@ -126,12 +126,12 @@ namespace MCConsoleClient
             }
         }
 
-        static void loginSession()
+        public static void loginSession()
         {
 
         }
 
-        static void handleUpdates()
+        public static void handleUpdates()
         {
             while (true)
             {

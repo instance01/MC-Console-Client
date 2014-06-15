@@ -154,6 +154,19 @@ namespace MCConsoleClient
         public static void encryptionResponse(byte[] publickey, byte[] token, string serverid)
         {
             //TODO
+            Util.joinServerSession(CryptManager.getServerHash(serverid, publickey, CryptManager.generateAESKey()));
+
+
+            List<byte> rawdata = new List<byte>();
+            rawdata.AddRange(Util.toVarInt(0)); // packetid
+            rawdata.AddRange(BitConverter.GetBytes((short)publickey.Length));
+            rawdata.AddRange(publickey);
+            rawdata.AddRange(BitConverter.GetBytes((short)token.Length));
+            rawdata.AddRange(token);
+            List<byte> data = new List<byte>();
+            data.AddRange(Util.toVarInt(rawdata.ToArray().Length));
+            data.AddRange(rawdata);
+            Program.sock.Send(data.ToArray());
         }
     }
 }
